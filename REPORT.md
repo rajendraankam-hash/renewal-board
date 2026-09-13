@@ -93,6 +93,29 @@ Run `sql/001_schema.sql` then `sql/002_seed.sql` in the Supabase SQL editor, the
 - UNVERIFIED: the Supabase read, the activity write, the totals update and persistence, because the `records` table does not exist yet
 - UNVERIFIED: the SQL blocks executing successfully, because they were not run against the database
 
+## GitHub publish (2026-09-13)
+## Status per part
+- git present, repo created: DONE
+  evidence: `git --version` -> 2.55.0.windows.5; `git init -b main` -> "Initialized empty Git repository"; `rev-parse --is-inside-work-tree` -> true
+- .gitignore covers secrets and heavy folders: DONE
+  evidence: `git check-ignore -v` -> `renewal-board/.gitignore:5:.env.local`, `:1:node_modules/`, `:2:.next/`; staged list had no `node_modules`, `.next` or `.env` entries
+- One commit: DONE
+  evidence: `git commit` -> `20bd6c1`, 24 files
+- Private repo created and pushed: DONE
+  evidence: `gh repo create renewal-board --private --source ... --push` -> exit 0; `gh repo view` -> `{"isPrivate":true,"visibility":"PRIVATE","url":"https://github.com/rajendraankam-hash/renewal-board"}`; `HEAD` 20bd6c1 == `origin/main` 20bd6c1
+
+## What broke and how I fixed it
+- `gh auth login --web` returned `HTTP 500` twice. Fix: requested the device code directly from the same GitHub endpoint, confirmed the token with `GET /user` -> 200, then fed it to `gh auth login --with-token` from a temp file that was deleted immediately. gh now stores it in the Windows keyring.
+- PowerShell flagged git's stderr progress as `NativeCommandError`; the command still exited 0.
+
+## Claims ledger (GitHub)
+- Repo is private: `gh repo view` -> `isPrivate:true`
+- Code is on GitHub: local `HEAD` equals `origin/main` (`20bd6c1`)
+- No key or heavy folder was uploaded: 24 tracked files, none matching `node_modules|.next/|.env`
+- Not committed anywhere: the local `.env.local` (Supabase publishable/browser key) stays on disk and is ignored
+- Note: the GitHub CLI was installed to `C:\Users\ankam\AppData\Local\gh-cli` (user folder, no admin) and the credential is in the Windows keyring, not a text file
+
+
 
 
 

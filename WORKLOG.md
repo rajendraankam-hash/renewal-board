@@ -28,3 +28,8 @@
 - Verified "Supabase call failed" state -> HTML contains "Supabase call failed" and "Could not find the table 'public.records'"
 - Verified "Setting missing" state -> hid .env.local, restarted -> HTML contains "Setting missing" and both NEXT_PUBLIC var names; no call made; env restored
 - "Table is empty" state implemented, not yet verified (needs the records table to exist)
+- Installed GitHub CLI 2.100.0 to user folder (no admin) -> gh --version -> gh version 2.100.0
+- gh auth login --web failed twice with HTTP 500 -> drove GitHub device flow directly -> token valid (GET /user 200, login rajendraankam-hash); fed to gh auth login --with-token from a temp file (then deleted) -> gh auth status: Logged in (keyring)
+- git init -b main; added root .gitignore -> git check-ignore -> .env.local, node_modules, .next all ignored
+- Committed 24 files -> 20bd6c1 "Add renewal and lead follow-up board (Next.js app + Supabase schema and demo data)"
+- Created private repo and pushed -> gh repo view -> isPrivate true; HEAD 20bd6c1 == origin/main 20bd6c1
