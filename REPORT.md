@@ -115,6 +115,33 @@ Run `sql/001_schema.sql` then `sql/002_seed.sql` in the Supabase SQL editor, the
 - Not committed anywhere: the local `.env.local` (Supabase publishable/browser key) stays on disk and is ignored
 - Note: the GitHub CLI was installed to `C:\Users\ankam\AppData\Local\gh-cli` (user folder, no admin) and the credential is in the Windows keyring, not a text file
 
+## GitHub + Vercel deployment (2026-09-13)
+## Status per part
+- git repo, ignore rules, secret scan: DONE
+  evidence: `git check-ignore -v` -> `.gitignore:9:.env.local`, `:2:node_modules/`, `:3:.next/`; secret scan `git grep -E "eyJ...|service_role|sb_secret|sk-..."` -> no matches
+- App moved to repo root (Vercel publishes the repo top): DONE
+  evidence: `git mv` 7 paths; `renewal-board/` deleted (`Test-Path` -> False); commit `4697394` (12 renames, 1 delete)
+- Pushed to private GitHub repo: DONE
+  evidence: `git push` -> `985b23c..4697394`; local HEAD == `origin/main` == `4697394`; `gh repo view` -> `isPrivate:true`
+- Vercel sign-in and project link: DONE
+  evidence: `vercel login` device flow -> "Congratulations! You are now signed in"; `vercel whoami` -> `rajendraankam-1268`; `vercel link --yes` -> Created `rajendra8/fwai-starter`, detected Next.js, connected the GitHub repo
+- Env vars in all three environments: DONE
+  evidence: `vercel env ls` -> `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` each in Development, Preview and Production (type Config)
+- Local build before deploy: DONE
+  evidence: `npm run build` -> `✓ Compiled successfully in 102s`; route `/` is dynamic
+- Production deploy: DONE
+  evidence: `vercel --prod` -> Ready in 26s; Aliased `https://fwai-starter-sigma.vercel.app`
+- Live URL verified: DONE
+  evidence: `GET https://fwai-starter-sigma.vercel.app` -> `STATUS 200`, renders the board with "30 in view", "Amount at risk ₹27,29,650", "Overdue 9", "Due today 5", and 30 record cards with Log call / Log visit
+
+## Claims ledger (deploy)
+- The public app is live and renders the board: the fetch above, status 200 with the board content
+- `.env.local` and `.vercel` are not committed: `git status --short` shows only `.gitignore` modified; `git check-ignore` matches both
+- The secret key was never used: only `NEXT_PUBLIC_*` browser values were read from `.env.local` and sent to Vercel; the Vercel CLI added a `VERCEL_OIDC_TOKEN` to `.env.local`, which is ignored by the `.env*` rule
+- UNVERIFIED: logging a call/visit from the live site writes to Supabase (not exercised on the public site to avoid changing the data)
+- Note: the deployment-specific URL (`https://fwai-starter-...vercel.app`) sits behind Vercel's login page; the public link is the alias `https://fwai-starter-sigma.vercel.app`
+
+
 
 
 

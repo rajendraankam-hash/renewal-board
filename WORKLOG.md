@@ -33,3 +33,11 @@
 - git init -b main; added root .gitignore -> git check-ignore -> .env.local, node_modules, .next all ignored
 - Committed 24 files -> 20bd6c1 "Add renewal and lead follow-up board (Next.js app + Supabase schema and demo data)"
 - Created private repo and pushed -> gh repo view -> isPrivate true; HEAD 20bd6c1 == origin/main 20bd6c1
+- Moved Next.js app to repo root (Vercel publishes repo top) -> git mv 7 paths + rm renewal-board/.gitignore -> commit 4697394; pushed 985b23c..4697394
+- Installed Vercel CLI 59.16.0 to user prefix -> vercel --version -> 59.16.0
+- vercel login (device flow) -> user authorized -> vercel whoami -> rajendraankam-1268
+- vercel link --yes -> Created rajendra8/fwai-starter, detected Next.js, connected GitHub repo
+- Added env vars to Production/Preview/Development -> vercel env ls -> both NEXT_PUBLIC vars in all 3 environments
+- Local build -> npm run build -> "Compiled successfully", route / dynamic
+- Deployed -> vercel --prod -> Production https://fwai-starter-7c06xxk6a-rajendra8.vercel.app, Aliased https://fwai-starter-sigma.vercel.app
+- Fetched live alias -> GET https://fwai-starter-sigma.vercel.app -> STATUS 200, board rendered: "30 in view", Amount at risk Rs 27,29,650, Overdue 9, Due today 5, 30 record cards with Log call/Log visit
