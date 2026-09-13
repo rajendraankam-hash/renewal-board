@@ -1,0 +1,30 @@
+# WORKLOG
+
+- Added remote n8n MCP server to global kilo.jsonc -> config validation on save + MCP initialize/tools/list -> 200 OK, 40 tools listed
+- Created built-in Data Table "Lead Renewal Intake" -> create_data_table (projectId P3lGOLtYS8Q3CdPY) -> {"id":"3IAJApIpMKb2lW0J","name":"Lead Renewal Intake"}
+- Built workflow from SDK code -> validate_workflow -> {"valid":true,"nodeCount":6}
+- Created workflow in n8n -> create_workflow_from_code -> {"workflowId":"gmtMlcGDcj0Bjbd8","name":"Lead & Renewal Intake","url":"https://rajendraankam.app.n8n.cloud/workflow/gmtMlcGDcj0Bjbd8"}
+- Verified persisted structure/connections -> get_workflow_details -> 6 nodes, Intake Form -> Validate -> IF -> (Store -> Success) / (Error), active:false
+- Tested validation logic from persisted jsCode -> node test-logic.mjs -> missing fields rejected naming phone+due_date; past date rejected naming due_date; valid gives LEAD-2026-0001 / REN-2026-0001, follow-up = due-3d
+- Confirmed table columns -> search_data_tables -> 8 string columns match the Data Table node schema
+- End-to-end test through n8n -> test_workflow -> {"executionId":"3","status":"waiting"} (pauses at n8n Form node by design)
+- Replaced expired n8n MCP token in global kilo.jsonc -> initialize -> STATUS 200 (previous token 401)
+- Built FAQ chatbot from faq.txt -> validate_workflow -> {"valid":true,"nodeCount":4}
+- Created chatbot workflow -> create_workflow_from_code -> {"workflowId":"ZB4iUqamOIk7xKHC","name":"RenewLoop FAQ Chatbot","autoAssignedCredentials":[]}
+- Tested chatbot -> test_workflow -> {"executionId":"7","status":"error","error":"Error in sub-node DeepSeek Chat Model"}
+- Checked credentials -> list_credentials -> {"data":[],"count":0} (no DeepSeek credential visible)
+- Re-checked credentials after user added key -> list_credentials -> count 1 ("DeepSeek account", deepSeekApi)
+- Attached credential -> update_workflow setNodeCredential -> {"appliedOperations":1,"validationWarnings":[]}
+- Re-tested chatbot -> test_workflow -> {"executionId":"8","status":"success"}
+- Published workflow -> publish_workflow -> {"success":true,"activeVersionId":"f7d8b216-b0ef-44a2-90bd-aa05fe83528d"}
+- Probed live public chat -> POST /webhook/afe29c8b-2e9e-47b9-8ee8-19b0051b978a/chat -> STATUS 200, reply: "Yes, we offer a free 30-minute Excel audit..."
+- Probed Supabase publishable key -> /auth/v1/health 200, /storage/v1/bucket 200, /rest/v1/records 404 (key valid, records table absent)
+- Wrote renewal-board Next.js source (13 files) -> node --check next.config.mjs + lib/supabase.js -> syntax OK; seed SQL rows 30, policies 4
+- npm install next react react-dom @supabase/supabase-js -> ENOSPC: no space left on device (C: free 0.19 GB)
+- npx create-next-app@latest renewal-board -> ENOSPC: no space left on device
+- BLOCKED: cannot install deps or run dev server on a full disk; partial install and temp cache removed to restore space
+- Installed deps after space freed -> npm install next react react-dom @supabase/supabase-js -> added 29 packages
+- Started dev server -> GET http://localhost:3000 -> STATUS 200
+- Verified "Supabase call failed" state -> HTML contains "Supabase call failed" and "Could not find the table 'public.records'"
+- Verified "Setting missing" state -> hid .env.local, restarted -> HTML contains "Setting missing" and both NEXT_PUBLIC var names; no call made; env restored
+- "Table is empty" state implemented, not yet verified (needs the records table to exist)

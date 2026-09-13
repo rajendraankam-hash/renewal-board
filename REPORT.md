@@ -1,0 +1,98 @@
+# REPORT
+
+## Status per part
+- n8n MCP server configured globally: DONE
+  evidence: `kilo.jsonc` saved and validated; MCP `initialize` returned HTTP 200, `serverInfo {"name":"n8n MCP Server","version":"1.1.0"}`; `tools/list` returned 40 tools
+- Built-in storage table created: DONE
+  evidence: `create_data_table` -> `{"id":"3IAJApIpMKb2lW0J","name":"Lead Renewal Intake"}`; `search_data_tables` shows 8 columns (record_type, name, phone, product, due_date, reference_number, follow_up_date, submitted_at)
+- Workflow built and created: DONE
+  evidence: `validate_workflow` -> `{"valid":true,"nodeCount":6}`; `create_workflow_from_code` -> `{"workflowId":"gmtMlcGDcj0Bjbd8","name":"Lead & Renewal Intake","url":"https://rajendraankam.app.n8n.cloud/workflow/gmtMlcGDcj0Bjbd8"}`
+- Validation logic proven: DONE
+  evidence: persisted `jsCode` run locally against 5 cases
+  - missing phone + due date -> valid=false, failing_fields="phone, due_date", error HTML names both
+  - past due date 2020-01-01 -> valid=false, failing_fields="due_date"
+  - valid New Lead -> LEAD-2026-0001, follow_up 2026-12-28 (due 2026-12-31)
+  - valid Renewals -> REN-2026-0001, REN-2026-0002
+- Full end-to-end execution: BLOCKED
+  evidence: `test_workflow` -> `{"executionId":"3","status":"waiting"}`; an n8n Form node waits for a real user response, so the test runner cannot complete it
+- Live/published form: BLOCKED (deliberately not done)
+  evidence: `get_workflow_details` -> `"active": false`; publishing to the public internet was not requested
+- Plan documents: BLOCKED
+  evidence: `PRD.md`, `TECH-STACK.md`, `IMPLEMENTATION-PLAN.md` do not exist in the project folder; built from the chat spec
+
+## What broke and how I fixed it
+- `create_data_table` first failed with `projectId: Required`. Fix: `search_projects` returned personal project `P3lGOLtYS8Q3CdPY`; re-ran with it.
+- PowerShell `Set-Content -Encoding UTF8` wrote a BOM, so the helper could not parse the args file. Fix: write with `UTF8Encoding($false)` / build args with Node.
+- PowerShell stripped double quotes from a JSON command-line argument. Fix: pass the extra args as a JSON file instead.
+
+## Claims ledger
+- Workflow exists and is named "Lead & Renewal Intake": `create_workflow_from_code` + `get_workflow_details` (id gmtMlcGDcj0Bjbd8)
+- 6 nodes with the designed wiring: `get_workflow_details` connections output
+- Error branch names the failing field(s): `test-logic.mjs` output above
+- Reference number and follow-up date returned on the success screen: `test-logic.mjs` output above
+- Data Table stores only valid entries (bad entries return before the store node): wiring shows error branch bypasses "Store Valid Entry"; validated by `get_workflow_details`
+- UNVERIFIED: that the hosted n8n Form page renders in a browser and that the Data Table row is written at runtime, because the form node waits for a live submission
+- UNVERIFIED: live form URL, because the workflow is not published
+
+## What I would tell the next person
+- The workflow is created but not active. Publish it in n8n before sharing the form URL.
+- Reference counters live in workflow static data (global). Clearing workflow data resets LEAD/REN/YYYY sequences.
+- Follow-up date = due date minus 3 days, floored at tomorrow.
+- One manual test execution (id 3) is left in "waiting" state in the n8n instance from `test_workflow`; it can be ignored or stopped in n8n.
+- Defaults were chosen because the clarifying questions were not answered; change them in the Code node if the real rules differ.
+
+## Chatbot workflow (2026-09-13)
+## Status per part
+- FAQ chatbot workflow built: DONE
+  evidence: `validate_workflow` -> `{"valid":true,"nodeCount":4}`; `create_workflow_from_code` -> `{"workflowId":"ZB4iUqamOIk7xKHC","name":"RenewLoop FAQ Chatbot","url":"https://rajendraankam.app.n8n.cloud/workflow/ZB4iUqamOIk7xKHC"}`
+- Chat Trigger set public + embedded: DONE (workflow side)
+  evidence: `get_workflow_details` -> Chat Trigger parameters `{"public":true,"mode":"webhook","authentication":"none","options":{"responseMode":"streaming","allowedOrigins":"*"}}`, webhookId `afe29c8b-2e9e-47b9-8ee8-19b0051b978a`
+- DeepSeek model credential attached: DONE
+  evidence: `list_credentials` -> `count:1` ("DeepSeek account", type deepSeekApi); `update_workflow` setNodeCredential -> `{"appliedOperations":1,"validationWarnings":[]}`
+- Bot answers from the FAQ: DONE
+  evidence: `test_workflow` -> `{"executionId":"8","status":"success"}`; execution data shows the FAQ Assistant replying with the Starter/Growth/Multi-branch pricing and the free-audit answer
+- Publish chat and return public link: DONE
+  evidence: `publish_workflow` -> `{"success":true,"activeVersionId":"f7d8b216-b0ef-44a2-90bd-aa05fe83528d"}`; `get_workflow_details` -> `active:true`; live POST to `https://rajendraankam.app.n8n.cloud/webhook/afe29c8b-2e9e-47b9-8ee8-19b0051b978a/chat` -> `STATUS 200` with reply "Yes, we offer a free 30-minute Excel audit..."
+
+## To unblock
+Resolved: the DeepSeek credential was added in n8n and attached to the model node.
+
+## Claims ledger (chatbot)
+- Workflow exists with 4 nodes: `create_workflow_from_code` + `get_workflow_details`
+- System message contains the FAQ text (demo note stripped): workflow builder written from `faq.txt` lines 1-139; generator throws if "demo document" is present
+- Public chat is live and answering: live POST returned 200 and a FAQ-grounded answer
+- UNVERIFIED: that the embedded widget renders visually in a browser (no browser tool used); the underlying webhook endpoint and the CDN assets (style.css, chat.bundle.es.js) both returned 200
+- Note: `allowedOrigins` is `*`, so any site can embed the widget
+
+## Renewal & Lead Follow-Up Board (2026-09-13)
+## Status per part
+- Next.js app source written (`renewal-board/`): DONE
+  evidence: 13 files written; `node --check` on `next.config.mjs` and `lib/supabase.js` -> syntax OK; `sql/002_seed.sql` has 30 rows; `sql/001_schema.sql` has RLS enabled and 4 policies
+- Supabase browser key valid: DONE
+  evidence: `/auth/v1/health` -> 200, `/storage/v1/bucket` -> 200, `/rest/v1/records` -> 404 (table not created yet)
+- Install dependencies and run locally: DONE
+  evidence: `npm install next react react-dom @supabase/supabase-js` -> `added 29 packages`; `GET http://localhost:3000` -> `STATUS 200`
+- App running locally: DONE
+  evidence: dev server on `http://localhost:3000`, `STATUS 200`, HTML length 11208
+- "Supabase call failed" state: DONE (verified live)
+  evidence: HTML contains `Supabase call failed` and the real error `Could not find the table 'public.records'`
+- "Setting missing" state: DONE (verified live)
+  evidence: hid `.env.local`, restarted, HTML contains `Setting missing`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and no Supabase call was made; env restored
+- "Table is empty" state: NOT VERIFIED
+  reason: needs the `records` table to exist with zero rows; I cannot create tables with the publishable key
+- Board happy path (data, totals, logging, persistence): NOT VERIFIED
+  reason: the `records` table does not exist yet; the user must run the SQL blocks in the Supabase SQL editor first
+
+## To unblock
+Run `sql/001_schema.sql` then `sql/002_seed.sql` in the Supabase SQL editor, then reload `http://localhost:3000`. After that the board, the totals and the "Table is empty" state can be verified.
+
+## Claims ledger (board)
+- App source is syntactically valid for the two ESM entry files: `node --check` (above)
+- The app runs and serves a page: `GET http://localhost:3000` -> 200
+- Two of the three states render distinctly and correctly: verified live as above
+- UNVERIFIED: the Supabase read, the activity write, the totals update and persistence, because the `records` table does not exist yet
+- UNVERIFIED: the SQL blocks executing successfully, because they were not run against the database
+
+
+
+

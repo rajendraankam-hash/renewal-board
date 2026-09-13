@@ -1,0 +1,141 @@
+RENEWLOOP AUTOMATION
+Renewal and lead follow-up setup for loan and insurance distribution agencies in Thane and Mumbai.
+
+We help agencies that run renewals, leads and MIS on Excel put their follow-ups on autopilot, so fewer renewals slip and fewer leads go cold.
+
+====================================================================
+FREQUENTLY ASKED QUESTIONS
+====================================================================
+
+1. What does your service do, in one line?
+We set up automated renewal reminders and lead follow-up sequences for your team, built around the Excel sheets you already use.
+
+2. Who do you work with?
+Loan and insurance distribution agencies and brokers in Thane and Mumbai. Most of our clients have a team of 2 to 20 people and run everything on Excel today.
+
+3. Do I have to stop using Excel?
+No. We usually keep Excel as your master record and connect it to automatic follow-ups. If you later want to move to a proper system, we can help, but it is not required.
+
+4. How do renewal reminders work?
+Your policy or loan renewal dates from your Excel sheet feed a reminder sequence. The right person gets a nudge by WhatsApp or email before the due date, so nothing depends on someone remembering to check a sheet.
+
+5. How do lead follow-ups work?
+New leads get an automatic first response and a fixed follow-up schedule. If a lead goes quiet, the system reminds your team again instead of leaving it to chance.
+
+6. Will my team have to learn new software?
+Barely. Your team keeps working in Excel or WhatsApp for most tasks. We set things up so the follow-ups happen in the background.
+
+7. What tools do you use?
+Only mainstream, low-cost tools like Google Sheets or Excel, WhatsApp, email and a workflow automation platform. We do not lock you into expensive software, and there are no accounts you must buy before we start.
+
+8. How long does setup take?
+A simple renewal reminder setup takes 3 to 5 working days. A full lead and renewal setup takes about 2 weeks. We give you a clear timeline after the free audit.
+
+9. What does it cost?
+Setup starts at Rs 15,000 one-time, and monthly support starts at Rs 2,500. See the PRICES section below for packages.
+
+10. Are there extra or hidden charges?
+No hidden charges. You pay the setup fee once and the monthly support fee. Any optional extras, like extra users or paid software you choose, are quoted upfront and in writing.
+
+11. Do you offer a free audit or trial?
+Yes. We start with a free 30-minute Excel audit. We look at your sheets and tell you exactly what can be automated and what it will cost. You pay nothing until you approve the plan.
+
+12. What is the 30-day money-back guarantee?
+If your agreed follow-up metrics do not improve within 30 days of going live, we refund your setup fee. You keep the setup, so you lose nothing.
+
+13. What do you need from me to get started?
+A copy of the relevant Excel sheets, access to a phone number or email you want reminders sent from, and about an hour of your time for a walkthrough. We handle the rest.
+
+14. Is my client data safe, and who owns it?
+Your data stays yours. We work on a copy or a shared sheet with limited access, we do not share your data with anyone else, and we remove our access when the project ends.
+
+15. Can it work for both loan and insurance renewals?
+Yes. Loans, policies, health and motor renewals, and general insurance all work. Each product can have its own reminder timing and message.
+
+16. Can it handle multiple branches or teams?
+Yes. Reminders can go to different people based on branch, product or owner. We set the routing during setup.
+
+17. What happens if a follow-up gets missed?
+The system logs every reminder and flags missed or failed ones, so you can see what happened and act on it. We also set an alert for failures so they do not pile up silently.
+
+18. What support do I get after setup?
+Monthly support covers fixes, small changes and a check-in on your numbers. We respond within 1 business day, and urgent WhatsApp issues within 4 business hours.
+
+19. What if I want to change or stop later?
+You can change your plan or stop any time with 30 days' notice. Your sheets, data and credentials stay with you, and we hand over everything.
+
+20. How do I get started?
+Book your free 30-minute Excel audit by phone or WhatsApp. We will review your sheets, suggest the simplest setup, and share a fixed quote the same week.
+
+====================================================================
+PRICES
+====================================================================
+
+All prices are in Indian Rupees. GST is charged extra where applicable.
+
+Free Excel audit
+  Rs 0 - 30 minutes, no obligation
+
+Starter setup
+  One-time: Rs 15,000
+  Monthly support: Rs 2,500
+  Best for: up to 500 renewals/leads a month, 1 to 3 users
+
+Growth setup
+  One-time: Rs 30,000
+  Monthly support: Rs 5,000
+  Best for: up to 2,000 renewals/leads a month, up to 8 users
+
+Multi-branch setup
+  One-time: from Rs 45,000
+  Monthly support: from Rs 8,000
+  Best for: multiple branches, unlimited records, up to 15 users
+
+Optional extras
+  Additional user: Rs 500 per user per month
+  On-site visit in Thane or Mumbai: first visit free within 15 km, then Rs 1,000 per visit
+  Custom reports or MIS dashboard: quoted after the audit
+
+What is included in monthly support
+  Fixes and small changes, monitoring of failed reminders, one monthly review call, and WhatsApp support during business hours.
+
+====================================================================
+TIMINGS
+====================================================================
+
+Business hours
+  Monday to Saturday: 10:00 AM to 7:00 PM IST
+  Sunday: closed (WhatsApp messages answered on Monday)
+
+On-site visits
+  Tuesday, Thursday and Saturday, by appointment
+  Thane and Mumbai only
+
+Support response times
+  Email and WhatsApp: within 1 business day
+  Urgent live issue: within 4 business hours
+
+Setup timelines
+  Renewal reminders only: 3 to 5 working days
+  Renewals plus lead follow-up: about 2 weeks
+  Timeline confirmed in writing after the free audit
+
+====================================================================
+CONTACT
+====================================================================
+
+Phone and WhatsApp: +91 98204 55671
+Email: hello@renewloop.in
+Website: www.renewloop.in
+
+Office
+  RenewLoop Automation
+  Office 204, Sai Plaza, Ghodbunder Road, Thane West, Thane 400607
+
+Mumbai meetings
+  Andheri East, by appointment
+
+Best way to reach us: WhatsApp your name, agency name and city, and we will book your free 30-minute Excel audit.
+
+====================================================================
+Note: This is a demo document. The business name, prices, timings, phone number, email, website and address above are fictional and are for sample use only.
