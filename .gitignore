@@ -8,6 +8,8 @@ build/
 .env
 .env.local
 .env.*.local
+key.txt
+composio-key.txt
 
 # Logs
 npm-debug.log*
@@ -19,3 +21,12 @@ Thumbs.db
 
 .vercel
 .env*
+
+# Local run artifacts for the scheduled digest agent (this machine only).
+# The publishable copy lives at examples/digest-agent.js.
+/digest-agent.js
+/digest.html
+/digest-task.xml
+/LEAD-MAGNET.md
+/lead-magnet.html
+/The-Month-End-Sanity-Check.pdf
