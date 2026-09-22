@@ -1,0 +1,9 @@
+{
+  "job_id": "JOB-1001",
+  "product": "die-cut-sticker",
+  "ordered_width_in": 3,
+  "ordered_height_in": 3,
+  "quantity": 100,
+  "customer": "Ravi",
+  "artwork": "preflight/fixtures/generated/lowres.png"
+}

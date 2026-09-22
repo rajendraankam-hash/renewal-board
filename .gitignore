@@ -30,3 +30,6 @@ Thumbs.db
 /LEAD-MAGNET.md
 /lead-magnet.html
 /The-Month-End-Sanity-Check.pdf
+
+# Preflight - generated test fixtures and run output
+/preflight/fixtures/generated/

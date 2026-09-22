@@ -141,6 +141,73 @@ Run `sql/001_schema.sql` then `sql/002_seed.sql` in the Supabase SQL editor, the
 - UNVERIFIED: logging a call/visit from the live site writes to Supabase (not exercised on the public site to avoid changing the data)
 - Note: the deployment-specific URL (`https://fwai-starter-...vercel.app`) sits behind Vercel's login page; the public link is the alias `https://fwai-starter-sigma.vercel.app`
 
+## Lead magnet: "The Month-End Sanity Check" (2026-09-20)
+## Status per part
+- Written and saved: DONE
+  evidence: `LEAD-MAGNET.md` written, then read back -> 45 lines; title, 12 checks in 4 groups, score band, CTA and sign-off all present
+- Sources used for the business facts: `faq.txt` (audience, free 30-minute Excel audit, contact lines 127-129, GST), `REPORT.md` line 135 (rupee amounts on the live board)
+- Name and contact: `[Your name]` left blank as asked; contact details are the documented ones from `faq.txt`, not invented
+
+## Claims ledger (lead magnet)
+- The file exists with 45 lines and the sections listed above: the read-back above
+- Every business fact in the piece traces to `faq.txt` or `REPORT.md`: free 30-minute Excel audit (`faq.txt` line 41), WhatsApp-first contact (`faq.txt` line 138), rupee/GST context (line 74)
+- UNVERIFIED: that the piece converts, reads well for the client, or fits their tone - no client review has happened
+- Conflict, deliberately resolved: the request said US dollars, but `faq.txt` line 74 states all prices are in Indian Rupees and the live board renders `₹27,29,650`. The piece uses rupees. The question's options (USD/GBP/EUR/AUD) did not offer rupees, so the answer was treated as a misfire, not a decision
+- Not done, not asked for: no PDF, no landing page, no email, no publishing
+
+## Lead magnet PDF (2026-09-20)
+## Status per part
+- Print-ready source written: DONE
+  evidence: `lead-magnet.html` written -> A4 `@page`, 2x2 check grid, no external fonts or assets, `print-color-adjust: exact` so the teal bands print
+- PDF produced: DONE
+  evidence: `& "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new --disable-gpu --no-first-run --user-data-dir=<temp> --no-pdf-header-footer --print-to-pdf=<out> file:///<...>/lead-magnet.html` -> stderr showed only the known `fallback_task_provider.cc` Chromium log, then `67289 bytes written to file ...The-Month-End-Sanity-Check.pdf`, `EXIT=0`
+- PDF is valid and one page: DONE
+  evidence: `node pdf-text-check.js` -> `header: %PDF-1.4`, `trailer: true`, `page objects: 1`, `/Count values: 1`, `media box: /MediaBox [0 0 594.95996 841.91998]` (A4)
+- PDF contains the finished content: DONE
+  evidence: same script decoded the embedded font `ToUnicode` CMaps -> all 14 checks `FOUND`: "Month-End Sanity Check", "12 checks", "Name one file as the truth", "Hunt the hand-typed numbers", "Prove your totals", "What to buy", "Whom to chase", "Where cash is stuck", "Your score", "10-12 ticks", "free 30-minute Excel audit", "98204 55671", "renewloop.in", "[Your name]"
+- Layout renders correctly: DONE
+  evidence: `msedge --headless --screenshot` -> 113636-byte PNG, read back and inspected: header, four bordered groups, score band, CTA band and sign-off all render, nothing clipped or overlapping, fits inside one A4 page
+
+## Claims ledger (lead magnet PDF)
+- The file exists and is a valid one-page A4 PDF: the structure output above
+- Every line of the checklist is inside the PDF: the ToUnicode decode above (not a guess - the text was read out of the PDF's own content streams)
+- Nothing in the PDF is fetched at print time (no webfonts, no images, no CDN): `lead-magnet.html` has no external `href`/`src`
+- The live site does not serve this PDF yet: it was not added to `public/` and no deploy was run
+- UNVERIFIED: how it looks on a real printer or in Adobe Reader, and that `[Your name]` is the intended final wording - the name is deliberately blank
+- Regenerate after any wording change: `msedge --headless=new --no-pdf-header-footer --print-to-pdf="<out>.pdf" "file:///<path>/lead-magnet.html"`
+
+## Preflight agent for Sticker Mule (2026-09-22)
+## Status per part
+- Agent built (`preflight/preflight.js`, `preflight/preflight-specs.json`): DONE
+  evidence: `node --check preflight/preflight.js` -> exit 0; `node --check preflight/test-preflight.js` -> exit 0
+- Test suite: DONE
+  evidence: `node preflight/test-preflight.js` -> `RESULT: 55 passed, 0 failed`
+- Single-job run: DONE
+  evidence: `node preflight/preflight.js --job preflight/jobs/example-job.json --out preflight/out` -> `JOB-1001 NEEDS_FIX ... Effective resolution is 50 DPI, below the 150 DPI minimum`; `Customer messages written: 1`
+- Unattended batch run: DONE
+  evidence: `node preflight/preflight.js --dir preflight/fixtures/generated --product die-cut-sticker --size 3x3 --out preflight/out` -> 11 jobs: `AUTO_APPROVED 5 | HUMAN_REVIEW 3 | NEEDS_FIX 3`
+- Model layer (vision second-opinion + AI-drafted customer message): NOT BUILT
+  reason: deliberately shipped the deterministic, verifiable core first. The extension point is documented in the agent header.
+
+## What broke and how I fixed it
+- Synthetic SVG fixtures were flagged for transparency because the reader assumed `hasAlpha: true`; that wrongly blocked auto-approval on vector artwork. Fix: vector readers return `hasAlpha: null`, and `null` now yields an `info` check, not a warning.
+- PDF/SVG had an unreadable colour space, which the first version marked `review` and so blocked every vector file. Fix: vector + unknown colour space is now `info` ("handled at print time"), so a clean vector file can auto-approve.
+
+## Claims ledger (preflight)
+- The decision can only be AUTO_APPROVED when there is no fail, review or warn check: proved by the invariant test `auto-approved with zero blocking checks` for every auto-approved case.
+- A low-resolution file is never auto-approved: proved by `low-resolution artwork is never AUTO_APPROVED` and `... is NEEDS_FIX`.
+- Transparency blocks auto-approve on vinyl but not on clear: proved by `transparency blocks auto-approve on a vinyl sticker` and `same file auto-approves on a clear product (spec-driven)`.
+- The agent writes decisions plus an append-only audit line per job: `preflight/out/decisions.json` and `preflight/out/audit.log` (12 lines shown).
+- Thresholds are prototype defaults, not Sticker Mule's requirements: `preflight-specs.json` `note` and `source_notes`; the pages fetched list sizes, 4-day turnaround and free proofs but no DPI/bleed/colour rules.
+- UNVERIFIED: any real Sticker Mule artwork, because none was used. Fixtures are generated by `test-preflight.js`.
+- UNVERIFIED: the model layer, because it is not implemented.
+
+## What I would tell the next person
+- Change thresholds in `preflight-specs.json` only; the code reads every limit from there.
+- Add a product by adding one entry under `products`; `fixedShape` switches the aspect-ratio check on, `allowsTransparency` switches the transparency warning off.
+- The agent parses headers only (PNG IHDR, JPEG SOF, PDF MediaBox, SVG width/height), so it never decodes pixel data and stays fast and dependency-free.
+- Next slice: a vision model for the cases a header cannot judge (text legibility at print size, content inside the cut line), behind a flag, scored against the same golden set.
+
 
 
 

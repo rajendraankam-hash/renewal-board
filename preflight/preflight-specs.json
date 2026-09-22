@@ -1,0 +1,77 @@
+{
+  "spec_version": "2026-09-22.1",
+  "note": "Thresholds here are PROTOTYPE DEFAULTS, not Sticker Mule's published requirements. Sticker Mule states sizes, 4-day turnaround and free online proofs publicly, but keeps exact print requirements internal (the Sticker Mule Guide refers proofers to 'the product requirements in Guru'). Tune this file, not the code.",
+  "source_notes": [
+    "Public: die cut stickers offered at 2x2, 3x3, 4x4, 5x5 in plus custom size.",
+    "Public: 'You don't have to be exact when selecting a size. We'll determine your exact size based on your artwork.'",
+    "Public: free online proof shortly after checkout; changes until the customer is happy.",
+    "Public: stickers are vinyl (8.3 mil) with a matte finish; labels are BOPP (4.2 mil).",
+    "Public: 4 day turnaround, free shipping, minimum 10 units."
+  ],
+  "defaults": {
+    "minDpi": 150,
+    "recommendedDpi": 300,
+    "aspectTolerancePct": 8,
+    "maxFileMb": 100,
+    "supportedFormats": ["png", "jpeg", "pdf", "svg", "gif"]
+  },
+  "decision": {
+    "autoApproveRequiresNoWarnings": true
+  },
+  "products": {
+    "die-cut-sticker": {
+      "label": "Die cut sticker",
+      "fixedShape": false,
+      "allowsTransparency": false,
+      "printProcess": "vinyl",
+      "notes": "Cut to the shape of the artwork, so there is no aspect requirement."
+    },
+    "kiss-cut-sticker": {
+      "label": "Kiss cut sticker",
+      "fixedShape": false,
+      "allowsTransparency": false,
+      "printProcess": "vinyl"
+    },
+    "circle-sticker": {
+      "label": "Circle sticker",
+      "fixedShape": true,
+      "shape": "circle",
+      "allowsTransparency": false,
+      "printProcess": "vinyl"
+    },
+    "square-sticker": {
+      "label": "Square sticker",
+      "fixedShape": true,
+      "shape": "square",
+      "allowsTransparency": false,
+      "printProcess": "vinyl"
+    },
+    "rectangle-sticker": {
+      "label": "Rectangle sticker",
+      "fixedShape": true,
+      "shape": "rectangle",
+      "allowsTransparency": false,
+      "printProcess": "vinyl"
+    },
+    "clear-sticker": {
+      "label": "Clear sticker",
+      "fixedShape": false,
+      "allowsTransparency": true,
+      "printProcess": "clear PET"
+    },
+    "circle-label": {
+      "label": "Circle label",
+      "fixedShape": true,
+      "shape": "circle",
+      "allowsTransparency": false,
+      "printProcess": "BOPP roll"
+    },
+    "rectangle-label": {
+      "label": "Rectangle label",
+      "fixedShape": true,
+      "shape": "rectangle",
+      "allowsTransparency": false,
+      "printProcess": "BOPP roll"
+    }
+  }
+}

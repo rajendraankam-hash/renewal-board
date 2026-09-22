@@ -41,3 +41,13 @@
 - Local build -> npm run build -> "Compiled successfully", route / dynamic
 - Deployed -> vercel --prod -> Production https://fwai-starter-7c06xxk6a-rajendra8.vercel.app, Aliased https://fwai-starter-sigma.vercel.app
 - Fetched live alias -> GET https://fwai-starter-sigma.vercel.app -> STATUS 200, board rendered: "30 in view", Amount at risk Rs 27,29,650, Overdue 9, Due today 5, 30 record cards with Log call/Log visit
+- Wrote lead magnet "The Month-End Sanity Check" (12 checks + score + free-audit CTA) -> saved LEAD-MAGNET.md -> 45 lines, read back, all sections and sign-off present
+- Wrote print-ready lead magnet -> saved lead-magnet.html (A4 @page, 2x2 check grid, no external fonts/assets)
+- Printed PDF with headless Edge -> msedge --headless=new --no-pdf-header-footer --print-to-pdf -> "67289 bytes written", exit 0
+- Verified PDF structure -> node pdf-text-check.js -> header %PDF-1.4, %%EOF true, 1 page object, /Count 1, /MediaBox [0 0 594.96 841.92] (A4)
+- Verified PDF text -> same script, decoded font ToUnicode maps -> all 14 phrases FOUND (title, all 12 item leads, score band, free-audit CTA, phone, domain, [Your name])
+- Verified layout -> msedge --headless --screenshot -> 113636 bytes PNG read back: 4 groups render, no clipping, no overlap, fits one page
+- Built Preflight artwork-QA agent -> node --check preflight/preflight.js + preflight/test-preflight.js -> both exit 0
+- Ran Preflight test suite -> node preflight/test-preflight.js -> RESULT: 55 passed, 0 failed (12 decision cases + invariants + 5 negative tests + 5 parser tests)
+- Ran single job through agent -> node preflight/preflight.js --job preflight/jobs/example-job.json --out preflight/out -> JOB-1001 NEEDS_FIX: "Effective resolution is 50 DPI, below the 150 DPI minimum"; customer message written
+- Ran unattended batch -> node preflight/preflight.js --dir preflight/fixtures/generated --product die-cut-sticker --size 3x3 --out preflight/out -> 11 jobs: AUTO_APPROVED 5, HUMAN_REVIEW 3, NEEDS_FIX 3; decisions.json + audit.log + 3 customer messages
