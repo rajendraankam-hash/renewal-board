@@ -3,11 +3,12 @@
 An automation suite for loan and insurance distribution agencies: one board that shows
 who to chase first, plus standalone agents that run on their own.
 
-This repo contains three things:
+This repo contains four things:
 
 1. **`examples/digest-agent.js` — an autonomous agent** (the code sample).
 2. **`app/` + `sql/` — a deployed board** (Next.js + Supabase Postgres).
 3. **`preflight/` — an autonomous artwork-QA agent** for print jobs.
+4. **`design-agent/` — a brief-to-proof-to-delivery design agent.**
 
 ---
 
@@ -99,12 +100,45 @@ content hash), and a customer message for every `NEEDS_FIX`.
 
 ---
 
+## 4. Design agent — brief to proof to delivered order (`design-agent/`)
+
+A customer brief goes in; a proof comes out; nothing is ordered until the customer approves
+one variant. After approval the agent runs the rest on its own:
+`APPROVED -> ORDER_CREATED -> IN_PRODUCTION -> SHIPPED -> DELIVERED`, writing an artifact at
+each step.
+
+- `design-agent/design-agent.js` — the agent and CLI.
+- `design-agent/design-specs.json` — palettes, layouts, product shapes, print DPI, turnaround,
+  revision cap.
+- `design-agent/test-design-agent.js` — 34 assertions over a temp folder.
+
+```bash
+node design-agent/test-design-agent.js
+node design-agent/design-agent.js --brief design-agent/jobs/example-brief.json --out design-agent/out --render
+node design-agent/design-agent.js --approve A --by "customer" --out design-agent/out
+node design-agent/design-agent.js --revise "make the tagline bigger" --out design-agent/out
+```
+
+Guardrails, and the tests that prove them:
+- **No order without approval**, and the approval is bound to the artwork hash — editing the
+  file after approval invalidates it instead of shipping something the customer never saw.
+- **The approved artwork is handed to the Preflight agent** before ordering; a blocked file
+  stops the order at `ORDER_BLOCKED`.
+- **Every state change is appended to `audit.log`**, so the history is reconstructable.
+- The default concept provider is **local and deterministic**, so the output is reproducible.
+  A model provider can be enabled with `--provider remote` plus an API key; without a key it
+  records the reason and falls back to local.
+
+---
+
 ## Status, honestly
 
 - The board is deployed and renders live (verified: `GET` the production URL → `200`, with 30 records and totals).
 - The agent runs on a daily schedule and produces a digest with emailed summaries.
 - Preflight's suite is green (`55 passed, 0 failed`) and it runs offline with no key; its
   numeric thresholds are prototype defaults, marked as such in `preflight/preflight-specs.json`.
+- The design agent's suite is green (`34 passed, 0 failed`). It was verified on artwork it
+  generated itself; it has not been run on real customer files or a real factory.
 - **Not yet enforced:** the RLS policies in `sql/001_schema.sql` are permissive (`using (true)`) for this demo. Per-person visibility ("each manager sees only their own list") is designed in but not implemented — a real deployment must replace those policies.
 - **Not exercised:** writing an activity from the public deployment back to Supabase (deliberately left alone so the deployed demo data stays intact).
 

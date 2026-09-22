@@ -51,3 +51,8 @@
 - Ran Preflight test suite -> node preflight/test-preflight.js -> RESULT: 55 passed, 0 failed (12 decision cases + invariants + 5 negative tests + 5 parser tests)
 - Ran single job through agent -> node preflight/preflight.js --job preflight/jobs/example-job.json --out preflight/out -> JOB-1001 NEEDS_FIX: "Effective resolution is 50 DPI, below the 150 DPI minimum"; customer message written
 - Ran unattended batch -> node preflight/preflight.js --dir preflight/fixtures/generated --product die-cut-sticker --size 3x3 --out preflight/out -> 11 jobs: AUTO_APPROVED 5, HUMAN_REVIEW 3, NEEDS_FIX 3; decisions.json + audit.log + 3 customer messages
+- Built design agent (brief -> proof -> approval -> order -> delivered) -> node --check design-agent/design-agent.js + design-agent/test-design-agent.js -> both exit 0
+- Ran design agent suite -> node design-agent/test-design-agent.js -> RESULT: 34 passed, 0 failed (renderer, providers, approval guardrails, pipeline, preflight handoff, revisions)
+- Drafted proof from a brief -> node design-agent/design-agent.js --brief design-agent/jobs/example-brief.json --out design-agent/out --render -> AWAITING_APPROVAL, 3 variants (A badge/forest, B stack/sunset, C minimal/ocean), proof.html + proof.png written, NO order.json
+- Found a real bug by looking at the render -> read design-agent/out/BR-2001/proof.png -> brand text was clipped outside the artboard on all 3 variants; added fitLines()/textBlock() text fitting and a regression test; re-render shows text inside the circle
+- Approved variant A -> node design-agent/design-agent.js --approve A --by "Maya" -> order SM-BR-2001-R1 -> PROD-BR-2001-R1 -> SHP-BR-2001-R1 tracking 1Z6A110B6064F822E3, state DELIVERED; audit.log shows preflight AUTO_APPROVED before the order

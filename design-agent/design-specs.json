@@ -1,0 +1,37 @@
+{
+  "spec_version": "2026-09-22.1",
+  "note": "Prototype defaults. Product ids match preflight-specs.json so the design agent and the preflight agent describe the same catalogue.",
+  "policy": {
+    "maxRevisions": 5,
+    "variantsPerRound": 3,
+    "requireApprovalBeforeOrder": true,
+    "requirePreflightBeforeOrder": true
+  },
+  "print": {
+    "dpi": 300,
+    "turnaround_days": 4
+  },
+  "statuses": [
+    "AWAITING_APPROVAL",
+    "ORDER_BLOCKED",
+    "ORDER_CREATED",
+    "IN_PRODUCTION",
+    "SHIPPED",
+    "DELIVERED"
+  ],
+  "palettes": {
+    "forest": { "bg": "#0F3D2E", "ink": "#F4EBD0", "accent": "#D97706" },
+    "sunset": { "bg": "#7C2D12", "ink": "#FFF7ED", "accent": "#F59E0B" },
+    "ocean": { "bg": "#0C2E4E", "ink": "#E0F2FE", "accent": "#22D3EE" },
+    "mono": { "bg": "#111111", "ink": "#FAFAFA", "accent": "#A3A3A3" }
+  },
+  "layouts": ["badge", "stack", "minimal"],
+  "products": {
+    "die-cut-sticker": { "label": "Die cut sticker", "shape": "rect" },
+    "circle-sticker": { "label": "Circle sticker", "shape": "circle" },
+    "square-sticker": { "label": "Square sticker", "shape": "rect" },
+    "rectangle-sticker": { "label": "Rectangle sticker", "shape": "rect" },
+    "circle-label": { "label": "Circle label", "shape": "circle" },
+    "rectangle-label": { "label": "Rectangle label", "shape": "rect" }
+  }
+}

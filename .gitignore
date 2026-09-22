@@ -33,3 +33,7 @@ Thumbs.db
 
 # Preflight - generated test fixtures and run output
 /preflight/fixtures/generated/
+
+# Design agent - generated proofs, fixtures and run output
+/design-agent/out/
+/design-agent/fixtures/
