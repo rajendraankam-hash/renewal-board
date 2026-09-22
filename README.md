@@ -3,12 +3,13 @@
 An automation suite for loan and insurance distribution agencies: one board that shows
 who to chase first, plus standalone agents that run on their own.
 
-This repo contains four things:
+This repo contains five things:
 
 1. **`examples/digest-agent.js` — an autonomous agent** (the code sample).
 2. **`app/` + `sql/` — a deployed board** (Next.js + Supabase Postgres).
 3. **`preflight/` — an autonomous artwork-QA agent** for print jobs.
 4. **`design-agent/` — a brief-to-proof-to-delivery design agent.**
+5. **`design-studio/` — the customer-facing app** over the design agent.
 
 ---
 
@@ -131,6 +132,27 @@ Guardrails, and the tests that prove them:
 
 ---
 
+## 5. Design Studio app (`design-studio/`)
+
+The customer-facing app over the design agent: enter a brief, see three designs rendered in
+the browser, approve one, and watch the order go to production, shipping and delivery.
+
+```bash
+node design-studio/server.js       # http://localhost:4321
+node design-studio/test-server.js  # 37 assertions over the real HTTP server
+```
+
+- `design-studio/server.js` — HTTP server, API, and edge validation: a bad brief is rejected
+  with a named field and nothing is saved.
+- `design-studio/public/index.html` — the UI, no framework and no dependencies.
+- Link a customer straight to their proof with `?brief=<id>`.
+
+State is a local folder (`design-studio/data/<brief_id>/`), so it survives restarts on one
+machine. Hosting it for real means putting a database behind `loadStatus` / `saveStatus`;
+every other part of the app stays the same.
+
+---
+
 ## Status, honestly
 
 - The board is deployed and renders live (verified: `GET` the production URL → `200`, with 30 records and totals).
@@ -139,6 +161,8 @@ Guardrails, and the tests that prove them:
   numeric thresholds are prototype defaults, marked as such in `preflight/preflight-specs.json`.
 - The design agent's suite is green (`34 passed, 0 failed`). It was verified on artwork it
   generated itself; it has not been run on real customer files or a real factory.
+- The Design Studio app is green (`37 passed, 0 failed`) and was rendered in a real browser,
+  but it is not deployed: its state lives in a local folder, not a database.
 - **Not yet enforced:** the RLS policies in `sql/001_schema.sql` are permissive (`using (true)`) for this demo. Per-person visibility ("each manager sees only their own list") is designed in but not implemented — a real deployment must replace those policies.
 - **Not exercised:** writing an activity from the public deployment back to Supabase (deliberately left alone so the deployed demo data stays intact).
 

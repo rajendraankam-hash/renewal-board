@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Studio</title>
+<style>
+  :root { --ink:#111; --muted:#6b6b6b; --line:#e2e2df; --bg:#f6f6f4; --card:#fff; --accent:#0f3d2e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:#111; color:#fff; padding:22px 28px; }
+  header h1 { margin:0 0 4px; font-size:22px; }
+  header p { margin:0; opacity:.8; font-size:14px; }
+  main { max-width:1080px; margin:0 auto; padding:24px 20px 60px; }
+  h2 { font-size:17px; margin:28px 0 12px; }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
+  label { display:block; font-size:13px; color:var(--muted); }
+  input, select { display:block; width:100%; margin-top:6px; padding:10px 11px; font-size:15px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  button { margin-top:14px; padding:11px 16px; font-size:15px; font-weight:700; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
+  button.secondary { background:#fff; color:var(--ink); border:1px solid var(--line); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .msg { margin-left:12px; font-size:14px; }
+  .msg.bad { color:#b91c1c; }
+  .errors { margin-top:12px; color:#b91c1c; font-size:14px; }
+  .errors ul { margin:6px 0 0 18px; padding:0; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center; }
+  .card .art svg { width:100%; height:auto; display:block; }
+  .card .meta { font-size:13px; color:var(--muted); margin:10px 0 0; line-height:1.5; }
+  .card .mono { font-family:Consolas,monospace; color:#888; font-size:12px; }
+  .card input { margin:10px 0 0; }
+  .card button { width:100%; margin-top:8px; }
+  .badge { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; background:#eee; }
+  .badge.AWAITING_APPROVAL { background:#fff4d6; }
+  .badge.DELIVERED { background:#dcfce7; }
+  .badge.ORDER_BLOCKED { background:#fee2e2; }
+  ol.timeline { list-style:none; margin:0; padding:0; }
+  ol.timeline li { padding:12px 0 12px 26px; border-left:2px solid var(--line); position:relative; }
+  ol.timeline li:before { content:""; position:absolute; left:-7px; top:17px; width:12px; height:12px; border-radius:50%; background:var(--accent); }
+  ol.timeline li.dim { opacity:.45; }
+  ol.timeline li.dim:before { background:#bbb; }
+  .tl-label { font-weight:700; font-size:14px; }
+  .tl-detail { font-size:13px; color:var(--muted); margin-top:3px; }
+  .delivery { margin-top:14px; font-size:15px; }
+  footer { max-width:1080px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Design Studio</h1>
+  <p>Describe it. Approve a design. We print it and ship it.</p>
+</header>
+
+<main>
+  <section class="panel">
+    <form id="briefForm">
+      <div class="grid">
+        <label>Brand text<input name="text" maxlength="60" placeholder="Trailhead Coffee" required></label>
+        <label>Tagline<input name="tagline" maxlength="80" placeholder="Roasted in Portland"></label>
+        <label>Product<select name="product" id="product"></select></label>
+        <label>Width (in)<input name="width_in" type="number" min="1" max="24" step="0.5" value="3"></label>
+        <label>Height (in)<input name="height_in" type="number" min="1" max="24" step="0.5" value="3"></label>
+        <label>Quantity<input name="quantity" type="number" min="10" step="10" value="100"></label>
+        <label>Palette<select name="palette" id="palette"><option value="">Auto</option></select></label>
+        <label>Your name<input name="customer" maxlength="60" placeholder="Maya"></label>
+      </div>
+      <button type="submit" id="createBtn">Create designs</button>
+      <span class="msg" id="formMsg"></span>
+      <div class="errors" id="formErrors"></div>
+    </form>
+  </section>
+
+  <section id="proofSection" hidden>
+    <h2>Proof <span class="badge" id="stateBadge"></span></h2>
+    <p class="tl-detail" id="proofMeta"></p>
+    <div class="cards" id="variants"></div>
+    <div class="panel" style="margin-top:18px">
+      <label>Request a change<input id="reviseNote" placeholder="make the tagline bigger"></label>
+      <button type="button" class="secondary" id="reviseBtn">Request changes</button>
+      <span class="msg" id="reviseMsg"></span>
+    </div>
+  </section>
+
+  <section id="timelineSection" hidden>
+    <h2>Fulfilment</h2>
+    <div class="panel">
+      <ol class="timeline" id="timeline"></ol>
+      <p class="delivery" id="deliveryMsg"></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Prototype. Designs are generated locally by the design agent; the approved artwork is checked by
+  the preflight agent before anything is ordered.
+</footer>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const STEPS = ["APPROVED", "ORDER_CREATED", "IN_PRODUCTION", "SHIPPED", "DELIVERED"];
+let currentId = null;
+
+async function api(url, options) {
+  const res = await fetch(url, options);
+  const data = await res.json().catch(() => ({}));
+  return { status: res.status, data };
+}
+
+function showErrors(fields) {
+  const box = $("#formErrors");
+  if (!fields) { box.innerHTML = ""; return; }
+  box.innerHTML = "<strong>Please fix:</strong><ul>" + Object.values(fields).map((v) => `<li>${v}</li>`).join("") + "</ul>";
+}
+
+function renderProof(data) {
+  currentId = data.brief_id;
+  $("#proofSection").hidden = false;
+  $("#stateBadge").textContent = data.state;
+  $("#stateBadge").className = "badge " + data.state;
+  const b = data.brief;
+  $("#proofMeta").textContent = `${b.product_label || b.product} - ${b.width_in} x ${b.height_in} in - qty ${b.quantity} - revision ${data.revision}`;
+  const canApprove = data.state === "AWAITING_APPROVAL";
+  $("#variants").innerHTML = data.variants.map((v) => `
+    <figure class="card">
+      <div class="art">${v.svg}</div>
+      <figcaption class="meta">
+        <strong>Variant ${v.id}</strong> &middot; ${v.layout} &middot; ${v.palette}<br>
+        <span class="mono">${v.sha256.slice(0, 12)}</span>
+      </figcaption>
+      ${canApprove ? `<input class="by" data-id="${v.id}" placeholder="Your name to approve">` : ""}
+      ${canApprove ? `<button data-approve="${v.id}">Approve ${v.id}</button>` : ""}
+    </figure>`).join("");
+  document.querySelectorAll("[data-approve]").forEach((btn) => {
+    btn.addEventListener("click", () => approve(btn.getAttribute("data-approve")));
+  });
+  renderTimeline(data);
+}
+
+function renderTimeline(data) {
+  const section = $("#timelineSection");
+  const done = new Set(data.order ? ["APPROVED", "ORDER_CREATED"] : data.approval ? ["APPROVED"] : []);
+  if (data.production) done.add("IN_PRODUCTION");
+  if (data.shipment) done.add("SHIPPED");
+  if (data.delivery) done.add("DELIVERED");
+  if (!data.approval) { section.hidden = true; return; }
+  section.hidden = false;
+  const detail = {
+    APPROVED: data.approval ? `Variant ${data.approval.variant_id} approved by ${data.approval.approved_by}` : "",
+    ORDER_CREATED: data.order ? `Order ${data.order.order_id}` : "",
+    IN_PRODUCTION: data.production ? `${data.production.production_id}, ${data.production.turnaround_days} day turnaround` : "",
+    SHIPPED: data.shipment ? `${data.shipment.carrier} tracking ${data.shipment.tracking}` : "",
+    DELIVERED: data.delivery ? "Delivered" : "",
+  };
+  $("#timeline").innerHTML = STEPS.map((s) => `
+    <li class="${done.has(s) ? "" : "dim"}">
+      <div class="tl-label">${s.replace(/_/g, " ").toLowerCase()}</div>
+      <div class="tl-detail">${detail[s] || "pending"}</div>
+    </li>`).join("");
+  $("#deliveryMsg").textContent = data.delivery ? data.delivery.message : "";
+  if (data.blocked) $("#deliveryMsg").textContent = "Blocked by preflight: " + (data.blocked.reasons || data.blocked.decision || "");
+}
+
+async function approve(variantId) {
+  const input = document.querySelector(`.by[data-id="${variantId}"]`);
+  const by = (input && input.value.trim()) || ($("#briefForm").customer.value || "").trim();
+  const msg = $("#formMsg");
+  if (!by) { msg.textContent = "Add your name to approve."; msg.className = "msg bad"; return; }
+  const { status, data } = await api(`/api/brief/${currentId}/approve`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ variant_id: variantId, by }),
+  });
+  if (status >= 400) { msg.textContent = data.error || "Could not approve."; msg.className = "msg bad"; return; }
+  msg.textContent = ""; msg.className = "msg";
+  renderProof(data);
+}
+
+async function revise() {
+  const note = $("#reviseNote").value.trim();
+  const msg = $("#reviseMsg");
+  if (!note) { msg.textContent = "Describe the change you want."; msg.className = "msg bad"; return; }
+  const { status, data } = await api(`/api/brief/${currentId}/revise`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ note }),
+  });
+  if (status >= 400) { msg.textContent = data.error || "Could not revise."; msg.className = "msg bad"; return; }
+  msg.textContent = ""; msg.className = "msg";
+  $("#reviseNote").value = "";
+  renderProof(data);
+}
+
+async function submit(e) {
+  e.preventDefault();
+  const f = e.target;
+  const btn = $("#createBtn");
+  btn.disabled = true;
+  $("#formMsg").textContent = "designing...";
+  $("#formMsg").className = "msg";
+  showErrors(null);
+  const payload = {
+    text: f.text.value, tagline: f.tagline.value, product: f.product.value,
+    width_in: f.width_in.value, height_in: f.height_in.value, quantity: f.quantity.value,
+    palette: f.palette.value, customer: f.customer.value,
+  };
+  const { status, data } = await api("/api/brief", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+  btn.disabled = false;
+  if (status >= 400) {
+    $("#formMsg").textContent = data.error || "Could not create designs.";
+    $("#formMsg").className = "msg bad";
+    showErrors(data.fields);
+    return;
+  }
+  $("#formMsg").textContent = "";
+  renderProof(data);
+  $("#proofSection").scrollIntoView({ behavior: "smooth" });
+}
+
+async function loadSpecs() {
+  const { data } = await api("/api/specs");
+  $("#product").innerHTML = (data.products || []).map((p) => `<option value="${p.id}">${p.label}</option>`).join("");
+  $("#palette").innerHTML = '<option value="">Auto</option>' + (data.palettes || []).map((p) => `<option value="${p}">${p}</option>`).join("");
+  if (data.turnaroundDays) document.querySelector("footer").textContent += ` Turnaround is ${data.turnaroundDays} days.`;
+}
+
+async function loadBrief(id) {
+  const { status, data } = await api(`/api/brief/${id}`);
+  if (status >= 400) { $("#formMsg").textContent = data.error || "Not found"; $("#formMsg").className = "msg bad"; return; }
+  renderProof(data);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadSpecs();
+  $("#briefForm").addEventListener("submit", submit);
+  $("#reviseBtn").addEventListener("click", revise);
+  const id = new URLSearchParams(location.search).get("brief");
+  if (id) await loadBrief(id);
+});
+</script>
+</body>
+</html>

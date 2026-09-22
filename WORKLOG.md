@@ -56,3 +56,9 @@
 - Drafted proof from a brief -> node design-agent/design-agent.js --brief design-agent/jobs/example-brief.json --out design-agent/out --render -> AWAITING_APPROVAL, 3 variants (A badge/forest, B stack/sunset, C minimal/ocean), proof.html + proof.png written, NO order.json
 - Found a real bug by looking at the render -> read design-agent/out/BR-2001/proof.png -> brand text was clipped outside the artboard on all 3 variants; added fitLines()/textBlock() text fitting and a regression test; re-render shows text inside the circle
 - Approved variant A -> node design-agent/design-agent.js --approve A --by "Maya" -> order SM-BR-2001-R1 -> PROD-BR-2001-R1 -> SHP-BR-2001-R1 tracking 1Z6A110B6064F822E3, state DELIVERED; audit.log shows preflight AUTO_APPROVED before the order
+- Built Design Studio app over the design agent -> node --check design-studio/server.js + design-studio/test-server.js -> both exit 0
+- Ran app test suite -> node design-studio/test-server.js -> RESULT: 37 passed, 0 failed (edge validation, proof, approval guardrails, pipeline, revisions)
+- Booted the real app and drove it over HTTP -> Invoke-RestMethod http://localhost:4321/api/brief -> BR-MUCLUMME0 AWAITING_APPROVAL, variants A,B,C each with inline SVG
+- Screenshot of the proof screen -> msedge --headless --screenshot -> 85571-byte PNG: form, 3 rendered designs, approve buttons, AWAITING_APPROVAL badge
+- Approved through the app -> POST /api/brief/BR-MUCLUMME0/approve -> DELIVERED, order SM-BR-MUCLUMME0-R1, UPS 1Z6A110B6064F822E3, preflight AUTO_APPROVED
+- Screenshot of the delivered state -> msedge --headless --screenshot -> 101983-byte PNG showing approved -> order created -> in production -> shipped -> delivered

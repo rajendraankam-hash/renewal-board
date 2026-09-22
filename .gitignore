@@ -37,3 +37,7 @@ Thumbs.db
 # Design agent - generated proofs, fixtures and run output
 /design-agent/out/
 /design-agent/fixtures/
+
+# Design Studio app - runtime data and test fixtures
+/design-studio/data/
+/design-studio/fixtures/

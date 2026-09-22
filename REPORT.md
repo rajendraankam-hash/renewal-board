@@ -242,6 +242,39 @@ Run `sql/001_schema.sql` then `sql/002_seed.sql` in the Supabase SQL editor, the
 - The preflight handoff is optional and degrades: if `preflight/` is absent it records a skip instead of failing.
 - Next slice: swap the local concept provider for a model that returns a validated JSON concept (palette, layout, copy), then render with the same deterministic SVG code so output stays reproducible.
 
+## Design Studio app (2026-09-22)
+## Status per part
+- App built (`design-studio/server.js`, `design-studio/public/index.html`): DONE
+  evidence: `node --check design-studio/server.js` -> exit 0; `node --check design-studio/test-server.js` -> exit 0
+- Test suite: DONE
+  evidence: `node design-studio/test-server.js` -> `RESULT: 37 passed, 0 failed`
+- Live run over HTTP: DONE
+  evidence: `GET http://localhost:4321/health` -> `ok=True app=design-studio/0.1.0 agent=design-agent/0.1.0`; `POST /api/brief` -> `BR-MUCLUMME0 state=AWAITING_APPROVAL variants=A,B,C svg0=766 bytes`
+- Approval through the app: DONE
+  evidence: `POST /api/brief/BR-MUCLUMME0/approve` -> `state=DELIVERED`, `order=SM-BR-MUCLUMME0-R1 by=Maya`, `shipment=UPS 1Z6A110B6064F822E3`, `preflight ok=True decision=AUTO_APPROVED`
+- Rendered UI: DONE
+  evidence: headless Edge screenshots — proof screen 85,571 bytes (form, 3 designs, approve buttons, AWAITING_APPROVAL badge); delivered screen 101,983 bytes (approved -> order created -> in production -> shipped -> delivered)
+- Persistence beyond one process: DONE (file-based)
+  evidence: `order file exists on disk` and `status persists across requests`; state is written under `design-studio/data/<brief_id>/`
+- Multi-user / hosted deployment: NOT BUILT
+  reason: state is a local folder, so a serverless host would need a database. Flagged rather than faked.
+
+## What broke and how I fixed it
+- Nothing broke in the app itself on first run. The two earlier fixes carried over: the design agent's text fitting (proof no longer clips) and clearing the temp folder between test runs.
+
+## Claims ledger (Design Studio)
+- Bad input is rejected and saves nothing: `empty brief is rejected with field errors`, `quantity below 10 is rejected`, `fractional quantity is rejected`, `oversized width is rejected`, `unknown product is rejected`, `unknown palette is rejected`, `malformed JSON is rejected as 400`, `rejected briefs write nothing to disk`.
+- No order without a valid approval: `approval without a name is rejected`, `approval of an unknown variant is rejected`, `brief is still awaiting approval after bad attempts`.
+- The app drives the real agent, not a mock: the order, tracking number and preflight result come from `design-agent.js` (`order=SM-BR-MUCLUMME0-R1`, `shipment=UPS 1Z6A110B6064F822E3`, `preflight ok=True`).
+- The UI actually renders designs and the pipeline: verified by two headless screenshots, not by reading the HTML.
+- UNVERIFIED: hosting it as a multi-user service, because state lives on the local filesystem.
+- UNVERIFIED: any real Sticker Mule product API; the order/production/shipment records are written locally and nothing is sent to a factory.
+
+## What I would tell the next person
+- Run `node design-studio/server.js`, open `http://localhost:4321`, or link a customer straight to a proof with `?brief=<id>`.
+- Put a database (Postgres) behind `agent.loadStatus`/`agent.saveStatus` before hosting this for real; the rest of the app does not change.
+- Reuse `/api/specs` to drive any other UI; it reads the same `design-specs.json`, so the product list cannot drift.
+
 
 
 
